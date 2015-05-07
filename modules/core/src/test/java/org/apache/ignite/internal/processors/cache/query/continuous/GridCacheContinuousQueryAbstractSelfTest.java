@@ -989,39 +989,4 @@ public abstract class GridCacheContinuousQueryAbstractSelfTest extends GridCommo
             }
         }
     }
-
-    /**
-     *
-     */
-    private static class StoreFactory implements Factory<CacheStore> {
-        @Override public CacheStore create() {
-            return new TestStore();
-        }
-    }
-
-    /**
-     * Store.
-     */
-    private static class TestStore extends CacheStoreAdapter<Object, Object> {
-        /** {@inheritDoc} */
-        @Override public void loadCache(IgniteBiInClosure<Object, Object> clo, Object... args) {
-            for (int i = 0; i < 10; i++)
-                clo.apply(i, i);
-        }
-
-        /** {@inheritDoc} */
-        @Nullable @Override public Object load(Object key) {
-            return null;
-        }
-
-        /** {@inheritDoc} */
-        @Override public void write(javax.cache.Cache.Entry<?, ?> entry) throws CacheWriterException {
-            // No-op.
-        }
-
-        /** {@inheritDoc} */
-        @Override public void delete(Object key) throws CacheWriterException {
-            // No-op.
-        }
-    }
 }
