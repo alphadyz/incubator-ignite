@@ -61,7 +61,7 @@ public class CacheContinuousQueryRestartSelfTest extends GridCommonAbstractTest 
         cacheCfg.setWriteSynchronizationMode(FULL_SYNC);
         cacheCfg.setReadThrough(true);
         cacheCfg.setWriteThrough(true);
-        cacheCfg.setCacheStoreFactory(new StoreFactory());
+        cacheCfg.setCacheStoreFactory(new GridCacheContinuousQueryAbstractSelfTest.StoreFactory());
         cacheCfg.setLoadPreviousValue(true);
 
         cfg.setCacheConfiguration(cacheCfg);
