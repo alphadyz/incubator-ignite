@@ -21,6 +21,7 @@ import org.apache.ignite.*;
 import org.apache.ignite.cache.*;
 import org.apache.ignite.cache.store.*;
 import org.apache.ignite.cache.store.jdbc.dialect.*;
+import org.apache.ignite.cache.store.tx.*;
 import org.apache.ignite.configuration.*;
 import org.apache.ignite.internal.util.tostring.*;
 import org.apache.ignite.internal.util.typedef.*;
@@ -340,6 +341,11 @@ public abstract class CacheAbstractJdbcStore<K, V> implements CacheStore<K, V>, 
             if (log.isDebugEnabled())
                 log.debug("Transaction ended [xid=" + tx.xid() + ", commit=" + commit + ']');
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override public CacheStoreSessionListener getSessionListener() {
+        return null;
     }
 
     /**

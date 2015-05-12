@@ -19,6 +19,7 @@ package org.apache.ignite.internal.processors.cache;
 
 import org.apache.ignite.*;
 import org.apache.ignite.cache.store.*;
+import org.apache.ignite.cache.store.tx.*;
 import org.apache.ignite.configuration.*;
 import org.apache.ignite.lang.*;
 import org.apache.ignite.spi.discovery.tcp.*;
@@ -28,7 +29,6 @@ import org.apache.ignite.testframework.junits.common.*;
 import org.apache.ignite.transactions.*;
 import org.jetbrains.annotations.*;
 
-import javax.cache.configuration.*;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
@@ -153,6 +153,11 @@ public class GridCacheStorePutxSelfTest extends GridCommonAbstractTest {
         /** {@inheritDoc} */
         @Override public void sessionEnd(boolean commit) {
             // No-op.
+        }
+
+        /** {@inheritDoc} */
+        @Override public CacheStoreSessionListener getSessionListener() {
+            return null;
         }
     }
 }

@@ -21,6 +21,7 @@ import org.apache.ignite.cache.*;
 import org.apache.ignite.cache.affinity.*;
 import org.apache.ignite.cache.eviction.*;
 import org.apache.ignite.cache.store.*;
+import org.apache.ignite.cache.store.tx.*;
 import org.apache.ignite.cluster.*;
 import org.apache.ignite.configuration.*;
 import org.apache.ignite.lang.*;
@@ -112,6 +113,11 @@ public class GridCacheLifecycleAwareSelfTest extends GridAbstractLifecycleAwareS
         /** {@inheritDoc} */
         @Override public void sessionEnd(boolean commit) {
             // No-op.
+        }
+
+        /** {@inheritDoc} */
+        @Override public CacheStoreSessionListener getSessionListener() {
+            return null;
         }
     }
 

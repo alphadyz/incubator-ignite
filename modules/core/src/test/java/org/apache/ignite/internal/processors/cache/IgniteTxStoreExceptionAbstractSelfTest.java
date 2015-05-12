@@ -19,6 +19,7 @@ package org.apache.ignite.internal.processors.cache;
 
 import org.apache.ignite.*;
 import org.apache.ignite.cache.store.*;
+import org.apache.ignite.cache.store.tx.*;
 import org.apache.ignite.cluster.*;
 import org.apache.ignite.configuration.*;
 import org.apache.ignite.internal.*;
@@ -659,6 +660,11 @@ public abstract class IgniteTxStoreExceptionAbstractSelfTest extends GridCacheAb
         @Override public void sessionEnd(boolean commit) {
             if (fail && commit)
                 throw new CacheWriterException("Store exception");
+        }
+
+        /** {@inheritDoc} */
+        @Override public CacheStoreSessionListener getSessionListener() {
+            return null;
         }
     }
 }

@@ -39,10 +39,17 @@ public class IgniteReflectionFactory<T> implements Factory<T> {
     private volatile Class<? extends T> cls;
 
     /** */
+    private volatile Object[] args;
+
+    /** */
     private volatile Map<String, Serializable> props;
 
     /** */
     private transient T instance;
+
+    public static <T> Factory<T> factoryOf(Class<? extends T> cls, Object... args) {
+        return new IgniteReflectionFactory<>(cls, args);
+    }
 
     /**
      *
@@ -54,19 +61,22 @@ public class IgniteReflectionFactory<T> implements Factory<T> {
     /**
      * @param cls Component class.
      * @param singleton Singleton flag.
+     * @param args Constructor arguments.
      */
-    public IgniteReflectionFactory(Class<? extends T> cls, boolean singleton) {
+    public IgniteReflectionFactory(Class<? extends T> cls, boolean singleton, Object... args) {
         this.cls = cls;
         this.singleton = singleton;
+        this.args = args;
     }
 
     /**
      * Creates non-singleton component factory.
      *
      * @param cls Component class.
+     * @param args Constructor arguments.
      */
-    public IgniteReflectionFactory(Class<? extends T> cls) {
-        this(cls, false);
+    public IgniteReflectionFactory(Class<? extends T> cls, Object... args) {
+        this(cls, false, args);
     }
 
     /**
@@ -128,18 +138,37 @@ public class IgniteReflectionFactory<T> implements Factory<T> {
     /**
      * @return Initialized instance.
      */
+    @SuppressWarnings("unchecked")
     private T createInstance() {
         if (cls == null)
             throw new IllegalStateException("Failed to create object (object type is not set).");
 
         try {
-            T obj = cls.newInstance();
+            T obj = null;
+
+            if (args == null || args.length == 0)
+                obj = cls.newInstance();
+            else {
+                for (Constructor<?> cons : cls.getDeclaredConstructors()) {
+                    try {
+                        obj = (T)cons.newInstance(args);
+
+                        break;
+                    }
+                    catch (IllegalArgumentException | ClassCastException ignored) {
+                        // No-op.
+                    }
+                }
+
+                if (obj == null)
+                    throw new IllegalArgumentException("");
+            }
 
             injectProperties(obj);
 
             return obj;
         }
-        catch (InstantiationException | IllegalAccessException e) {
+        catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new CacheException("Failed to instantiate factory object: " + cls.getName(), e);
         }
     }

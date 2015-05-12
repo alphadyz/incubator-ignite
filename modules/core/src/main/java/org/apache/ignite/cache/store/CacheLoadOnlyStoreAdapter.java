@@ -18,6 +18,7 @@
 package org.apache.ignite.cache.store;
 
 import org.apache.ignite.*;
+import org.apache.ignite.cache.store.tx.*;
 import org.apache.ignite.internal.util.typedef.internal.*;
 import org.apache.ignite.lang.*;
 import org.apache.ignite.resources.*;
@@ -257,6 +258,11 @@ public abstract class CacheLoadOnlyStoreAdapter<K, V, I> implements CacheStore<K
     /** {@inheritDoc} */
     @Override public void sessionEnd(boolean commit) {
         // No-op.
+    }
+
+    /** {@inheritDoc} */
+    @Override public CacheStoreSessionListener getSessionListener() {
+        return null;
     }
 
     /**

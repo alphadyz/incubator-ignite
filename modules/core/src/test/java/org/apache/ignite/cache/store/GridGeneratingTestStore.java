@@ -17,6 +17,7 @@
 
 package org.apache.ignite.cache.store;
 
+import org.apache.ignite.cache.store.tx.*;
 import org.apache.ignite.internal.util.typedef.*;
 import org.apache.ignite.lang.*;
 import org.apache.ignite.resources.*;
@@ -97,5 +98,10 @@ public class GridGeneratingTestStore implements CacheStore<String, String> {
     /** {@inheritDoc} */
     @Override public void sessionEnd(boolean commit) {
         // No-op.
+    }
+
+    /** {@inheritDoc} */
+    @Override public CacheStoreSessionListener getSessionListener() {
+        return null;
     }
 }

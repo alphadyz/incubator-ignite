@@ -21,6 +21,7 @@ import com.google.common.collect.*;
 import org.apache.ignite.*;
 import org.apache.ignite.cache.*;
 import org.apache.ignite.cache.store.*;
+import org.apache.ignite.cache.store.tx.*;
 import org.apache.ignite.configuration.*;
 import org.apache.ignite.events.*;
 import org.apache.ignite.internal.processors.cache.store.*;
@@ -384,6 +385,11 @@ public abstract class GridCacheAbstractLocalStoreSelfTest extends GridCommonAbst
         /** {@inheritDoc} */
         @Override public void sessionEnd(boolean commit) throws CacheWriterException {
             // No-op.
+        }
+
+        /** {@inheritDoc} */
+        @Override public CacheStoreSessionListener getSessionListener() {
+            return null;
         }
 
         /** {@inheritDoc} */

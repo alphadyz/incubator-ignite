@@ -20,6 +20,7 @@ package org.apache.ignite.internal.processors.cache.integration;
 import org.apache.ignite.*;
 import org.apache.ignite.cache.*;
 import org.apache.ignite.cache.store.*;
+import org.apache.ignite.cache.store.tx.*;
 import org.apache.ignite.configuration.*;
 import org.apache.ignite.internal.processors.cache.*;
 import org.apache.ignite.lang.*;
@@ -202,6 +203,11 @@ public abstract class IgniteCacheStoreSessionWriteBehindAbstractTest extends Ign
             assertTrue("Unexpected keys: " + keys, keys.size() == 10 || keys.size() == 1);
 
             checkSession("deleteAll");
+        }
+
+        /** {@inheritDoc} */
+        @Override public CacheStoreSessionListener getSessionListener() {
+            return null;
         }
 
         /**

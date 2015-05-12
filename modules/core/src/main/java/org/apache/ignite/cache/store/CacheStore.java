@@ -18,6 +18,7 @@
 package org.apache.ignite.cache.store;
 
 import org.apache.ignite.cache.store.jdbc.*;
+import org.apache.ignite.cache.store.tx.*;
 import org.apache.ignite.lang.*;
 import org.apache.ignite.transactions.*;
 import org.jetbrains.annotations.*;
@@ -94,6 +95,15 @@ public interface CacheStore<K, V> extends CacheLoader<K, V>, CacheWriter<K, V> {
      * @throws CacheWriterException If commit or rollback failed. Note that commit failure in some cases
      *      may bring cache transaction into {@link TransactionState#UNKNOWN} which will
      *      consequently cause all transacted entries to be invalidated.
+     * @deprecated Deprecated in favor of {@link CacheStoreSessionListener}.
      */
+    @Deprecated
     public void sessionEnd(boolean commit) throws CacheWriterException;
+
+    /**
+     * Gets session listener.
+     *
+     * @return Session listener.
+     */
+    public CacheStoreSessionListener getSessionListener();
 }

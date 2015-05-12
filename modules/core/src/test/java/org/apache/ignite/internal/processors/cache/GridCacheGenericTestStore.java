@@ -19,6 +19,7 @@ package org.apache.ignite.internal.processors.cache;
 
 import org.apache.ignite.*;
 import org.apache.ignite.cache.store.*;
+import org.apache.ignite.cache.store.tx.*;
 import org.apache.ignite.internal.*;
 import org.apache.ignite.internal.util.typedef.internal.*;
 import org.apache.ignite.lang.*;
@@ -253,6 +254,11 @@ public class GridCacheGenericTestStore<K, V> implements CacheStore<K, V> {
     /** {@inheritDoc} */
     @Override public void sessionEnd(boolean commit) {
         // No-op.
+    }
+
+    /** {@inheritDoc} */
+    @Override public CacheStoreSessionListener getSessionListener() {
+        return null;
     }
 
     /**

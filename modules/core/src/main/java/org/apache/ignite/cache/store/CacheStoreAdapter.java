@@ -17,6 +17,7 @@
 
 package org.apache.ignite.cache.store;
 
+import org.apache.ignite.cache.store.tx.*;
 import org.apache.ignite.lang.*;
 
 import javax.cache.*;
@@ -37,6 +38,23 @@ import java.util.*;
  * specific arguments.
  */
 public abstract class CacheStoreAdapter<K, V> implements CacheStore<K, V> {
+    /** Transaction manager. */
+    private CacheStoreSessionListener sesLsnr;
+
+    /**
+     * Sets session listener.
+     *
+     * @param sesLsnr Session listener.
+     */
+    public void setSessionListener(CacheStoreSessionListener sesLsnr) {
+        this.sesLsnr = sesLsnr;
+    }
+
+    /** {@inheritDoc} */
+    @Override public CacheStoreSessionListener getSessionListener() {
+        return sesLsnr;
+    }
+
     /**
      * Default empty implementation. This method needs to be overridden only if
      * {@link org.apache.ignite.IgniteCache#loadCache(IgniteBiPredicate, Object...)} method
@@ -87,7 +105,9 @@ public abstract class CacheStoreAdapter<K, V> implements CacheStore<K, V> {
      * for all other cases this method should be overridden with custom commit/rollback logic.
      *
      * @param commit {@inheritDoc}
+     * @deprecated {@inheritDoc}
      */
+    @Deprecated
     @Override public void sessionEnd(boolean commit) {
         // No-op.
     }

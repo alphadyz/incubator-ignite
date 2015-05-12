@@ -19,6 +19,7 @@ package org.apache.ignite.internal.processors.cache.integration;
 
 import org.apache.ignite.*;
 import org.apache.ignite.cache.store.*;
+import org.apache.ignite.cache.store.tx.*;
 import org.apache.ignite.configuration.*;
 import org.apache.ignite.internal.processors.cache.*;
 import org.apache.ignite.internal.util.typedef.*;
@@ -309,6 +310,11 @@ public abstract class IgniteCacheStoreSessionAbstractTest extends IgniteCacheAbs
             log.info("DeleteAll [keys=" + keys + ", tx=" + session().transaction() + ']');
 
             checkSession("deleteAll");
+        }
+
+        /** {@inheritDoc} */
+        @Override public CacheStoreSessionListener getSessionListener() {
+            return null;
         }
 
         /**

@@ -19,6 +19,7 @@ package org.apache.ignite.cache.store;
 
 import org.apache.ignite.*;
 import org.apache.ignite.cache.*;
+import org.apache.ignite.cache.store.tx.*;
 import org.apache.ignite.configuration.*;
 import org.apache.ignite.internal.processors.cache.*;
 import org.apache.ignite.lang.*;
@@ -232,6 +233,11 @@ public class IgniteCacheExpiryStoreLoadSelfTest extends GridCacheAbstractSelfTes
         /** {@inheritDoc} */
         @Override public void deleteAll(Collection<?> keys) {
             // No-op.
+        }
+
+        /** {@inheritDoc} */
+        @Override public CacheStoreSessionListener getSessionListener() {
+            return null;
         }
     }
 }
