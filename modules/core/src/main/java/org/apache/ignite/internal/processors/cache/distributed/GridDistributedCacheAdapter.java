@@ -154,13 +154,12 @@ public abstract class GridDistributedCacheAdapter<K, V> extends GridCacheAdapter
                 // Send job to all data nodes.
                 Collection<ClusterNode> nodes = ctx.grid().cluster().forDataNodes(name()).nodes();
 
-
                 if (!nodes.isEmpty()) {
                     CacheOperationContext opCtx = ctx.operationContextPerCall();
 
                     Collection<Boolean> results = ctx.closures().callAsyncNoFailover(BROADCAST,
-                        Collections.singleton(new GlobalRemoveAllCallable<>(name(), topVer, opCtx != null && opCtx.skipStore())), nodes,
-                        true).get();
+                        Collections.singleton(new GlobalRemoveAllCallable<>(name(), topVer,
+                        opCtx != null && opCtx.skipStore())), nodes, true).get();
 
                     for (Boolean res : results) {
                         if (res != null && !res)
