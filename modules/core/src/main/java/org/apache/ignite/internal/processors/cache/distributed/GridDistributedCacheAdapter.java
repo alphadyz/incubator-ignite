@@ -315,43 +315,41 @@ public abstract class GridDistributedCacheAdapter<K, V> extends GridCacheAdapter
 
                     dataLdr.receiver(DataStreamerCacheUpdaters.<KeyCacheObject, Object>batched());
 
-                    for (GridDhtLocalPartition locPart : dht.topology().localPartitions()) {
-                        if (locPart.state() == EVICTED) {
-                            assert locPart.entries().size() == 0;
+                    for (int part = 0; part < dht.affinity().partitions(); ++part) {
+                        if (ctx.affinity().belongs(ctx.localNode(), part, topVer)) {
+                            GridDhtLocalPartition locPart = dht.topology().localPartition(part, topVer, false);
 
-                            continue;
-                        }
+                            if (locPart == null || locPart.state() != OWNING || !locPart.reserve())
+                                return false;
 
-                        if (locPart == null || locPart.state() != OWNING || !locPart.reserve())
-                            return false;
+                            try {
+                                if (!locPart.isEmpty() && locPart.primary(topVer)) {
+                                    for (GridDhtCacheEntry o : locPart.entries()) {
+                                        if (!ctx.affinity().belongs(ctx.localNode(), locPart.id(),
+                                            dht.topology().topologyVersion()))
+                                            return false;
 
-                        try {
-                            if (!locPart.isEmpty() && locPart.primary(topVer)) {
-                                for (GridDhtCacheEntry o : locPart.entries()) {
-                                    if (!ctx.affinity().belongs(ctx.localNode(), locPart.id(),
-                                        dht.topology().topologyVersion()))
-                                        return false;
+                                        if (!o.obsoleteOrDeleted())
+                                            dataLdr.removeDataInternal(o.key());
+                                    }
+                                }
 
-                                    if (!o.obsoleteOrDeleted())
-                                        dataLdr.removeDataInternal(o.key());
+                                GridCloseableIterator<Map.Entry<byte[], GridCacheSwapEntry>> iter =
+                                    ctx.swap().iterator(locPart.id());
+
+                                if (iter != null) {
+                                    for (Map.Entry<byte[], GridCacheSwapEntry> e : iter) {
+                                        if (!ctx.affinity().belongs(ctx.localNode(), locPart.id(),
+                                            dht.topology().topologyVersion()))
+                                            return false;
+
+                                        dataLdr.removeDataInternal(ctx.toCacheKeyObject(e.getKey()));
+                                    }
                                 }
                             }
-
-                            GridCloseableIterator<Map.Entry<byte[], GridCacheSwapEntry>> iter =
-                                ctx.swap().iterator(locPart.id());
-
-                            if (iter != null) {
-                                for (Map.Entry<byte[], GridCacheSwapEntry> e : iter) {
-                                    if (!ctx.affinity().belongs(ctx.localNode(), locPart.id(),
-                                        dht.topology().topologyVersion()))
-                                        return false;
-
-                                    dataLdr.removeDataInternal(ctx.toCacheKeyObject(e.getKey()));
-                                }
+                            finally {
+                                locPart.release();
                             }
-                        }
-                        finally {
-                            locPart.release();
                         }
                     }
                 }
