@@ -18,7 +18,6 @@
 package org.apache.ignite.internal.processors.cache.distributed;
 
 import org.apache.ignite.*;
-import org.apache.ignite.cache.*;
 import org.apache.ignite.cluster.*;
 import org.apache.ignite.internal.*;
 import org.apache.ignite.internal.cluster.*;
@@ -351,10 +350,7 @@ public abstract class GridDistributedCacheAdapter<K, V> extends GridCacheAdapter
             }
 
             if (!ctx.affinity().affinityTopologyVersion().equals(topVer)) {
-                System.out.println("!!!! have different version in the end. Local size=" +
-                    cacheAdapter.localSize(new CachePeekMode[]{CachePeekMode.ALL}) +
-                    ", local primary size=" + cacheAdapter.localSize(new CachePeekMode[]{CachePeekMode.PRIMARY}) +
-                    ", local backup size=" + cacheAdapter.localSize(new CachePeekMode[]{CachePeekMode.BACKUP}));
+                System.out.println("!!!! have different version in the end.");
 
                 return new Integer(-1);
             }
