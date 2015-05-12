@@ -18,6 +18,7 @@
 package org.apache.ignite.internal.processors.cache.distributed;
 
 import org.apache.ignite.*;
+import org.apache.ignite.cache.*;
 import org.apache.ignite.cluster.*;
 import org.apache.ignite.internal.*;
 import org.apache.ignite.internal.cluster.*;
@@ -142,21 +143,32 @@ public abstract class GridDistributedCacheAdapter<K, V> extends GridCacheAdapter
         try {
             AffinityTopologyVersion topVer;
 
+            boolean removed;
+
             do {
+                removed = true;
+
+                System.out.println("!!!!Redone remove all");
                 topVer = ctx.affinity().affinityTopologyVersion();
 
                 // Send job to all data nodes.
                 Collection<ClusterNode> nodes = ctx.grid().cluster().forDataNodes(name()).nodes();
 
+
                 if (!nodes.isEmpty()) {
                     CacheOperationContext opCtx = ctx.operationContextPerCall();
 
-                    ctx.closures().callAsyncNoFailover(BROADCAST,
-                        new GlobalRemoveAllCallable<>(name(), topVer, opCtx != null && opCtx.skipStore()), nodes,
+                    Collection<Object> results = ctx.closures().callAsyncNoFailover(BROADCAST,
+                        Collections.singleton(new GlobalRemoveAllCallable<>(name(), topVer, opCtx != null && opCtx.skipStore())), nodes,
                         true).get();
+
+                    for (Object res : results) {
+                        if (res != null)
+                            removed = false;
+                    }
                 }
             }
-            while (ctx.affinity().affinityTopologyVersion().compareTo(topVer) > 0);
+            while (ctx.affinity().affinityTopologyVersion().compareTo(topVer) != 0 || !removed);
         }
         catch (ClusterGroupEmptyCheckedException ignore) {
             if (log.isDebugEnabled())
@@ -272,6 +284,9 @@ public abstract class GridDistributedCacheAdapter<K, V> extends GridCacheAdapter
         @Override public Object call() throws Exception {
             GridCacheAdapter<K, V> cacheAdapter = ((IgniteKernal)ignite).context().cache().internalCache(cacheName);
 
+            if (cacheAdapter == null)
+                return new Integer(-1);
+
             final GridCacheContext<K, V> ctx = cacheAdapter.context();
 
             ctx.affinity().affinityReadyFuture(topVer).get();
@@ -279,8 +294,10 @@ public abstract class GridDistributedCacheAdapter<K, V> extends GridCacheAdapter
             ctx.gate().enter();
 
             try {
-                if (!ctx.affinity().affinityTopologyVersion().equals(topVer))
-                    return null; // Ignore this remove request because remove request will be sent again.
+                if (!ctx.affinity().affinityTopologyVersion().equals(topVer)) {
+                    System.out.println("!!!! have different version");
+                    return new Integer(-1); // Ignore this remove request because remove request will be sent again.
+                }
 
                 GridDhtCacheAdapter<K, V> dht;
                 GridNearCacheAdapter<K, V> near = null;
@@ -303,7 +320,7 @@ public abstract class GridDistributedCacheAdapter<K, V> extends GridCacheAdapter
                     for (GridDhtLocalPartition locPart : dht.topology().currentLocalPartitions()) {
                         if (!locPart.isEmpty() && locPart.primary(topVer)) {
                             for (GridDhtCacheEntry o : locPart.entries()) {
-                                if (!o.obsoleteOrDeleted())
+                                //if (!o.obsoleteOrDeleted())
                                     dataLdr.removeDataInternal(o.key());
                             }
                         }
@@ -331,6 +348,15 @@ public abstract class GridDistributedCacheAdapter<K, V> extends GridCacheAdapter
             }
             finally {
                 ctx.gate().leave();
+            }
+
+            if (!ctx.affinity().affinityTopologyVersion().equals(topVer)) {
+                System.out.println("!!!! have different version in the end. Local size=" +
+                    cacheAdapter.localSize(new CachePeekMode[]{CachePeekMode.ALL}) +
+                    ", local primary size=" + cacheAdapter.localSize(new CachePeekMode[]{CachePeekMode.PRIMARY}) +
+                    ", local backup size=" + cacheAdapter.localSize(new CachePeekMode[]{CachePeekMode.BACKUP}));
+
+                return new Integer(-1);
             }
 
             return null;

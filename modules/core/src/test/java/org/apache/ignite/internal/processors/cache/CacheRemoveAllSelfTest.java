@@ -18,7 +18,9 @@
 package org.apache.ignite.internal.processors.cache;
 
 import org.apache.ignite.*;
+import org.apache.ignite.cache.*;
 import org.apache.ignite.internal.*;
+import org.apache.ignite.internal.util.typedef.internal.*;
 import org.apache.ignite.testframework.*;
 
 import java.util.concurrent.*;
@@ -28,6 +30,11 @@ import java.util.concurrent.atomic.*;
  * Test remove all method.
  */
 public class CacheRemoveAllSelfTest extends GridCacheAbstractSelfTest {
+    @Override
+    protected long getTestTimeout() {
+        return 600000;
+    }
+
     /** {@inheritDoc} */
     @Override protected int gridCount() {
         return 4;
@@ -58,7 +65,16 @@ public class CacheRemoveAllSelfTest extends GridCacheAbstractSelfTest {
         fut.get();
 
         for (int i = 0; i < igniteId.get(); ++i)
-            assertEquals(0, grid(i).cache(null).localSize());
+            assertEquals("Local entries: " + entrySet(grid(i).cache(null).localEntries(CachePeekMode.PRIMARY)) +
+                ". All entries:" +
+                entrySet(grid(i).cache(null).localEntries()), 0, grid(i).cache(null).localSize());
+
+        U.sleep(5000);
+
+        for (int i = 0; i < igniteId.get(); ++i)
+            assertEquals("2 Local entries: " + entrySet(grid(i).cache(null).localEntries(CachePeekMode.PRIMARY)) +
+                ". All entries:" +
+                entrySet(grid(i).cache(null).localEntries()), 0, grid(i).cache(null).localSize());
 
         assertEquals(0, cache.size());
     }
