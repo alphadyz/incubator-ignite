@@ -19,8 +19,8 @@ package org.apache.ignite.internal.processors.cache;
 
 import org.apache.ignite.*;
 import org.apache.ignite.cache.*;
+import org.apache.ignite.configuration.*;
 import org.apache.ignite.internal.*;
-import org.apache.ignite.internal.util.typedef.internal.*;
 import org.apache.ignite.testframework.*;
 
 import java.util.concurrent.*;
@@ -38,6 +38,11 @@ public class CacheRemoveAllSelfTest extends GridCacheAbstractSelfTest {
     /** {@inheritDoc} */
     @Override protected int gridCount() {
         return 4;
+    }
+
+    /** {@inheritDoc} */
+    @Override protected NearCacheConfiguration nearConfiguration() {
+        return null;
     }
 
     /**
@@ -64,18 +69,16 @@ public class CacheRemoveAllSelfTest extends GridCacheAbstractSelfTest {
 
         fut.get();
 
-        for (int i = 0; i < igniteId.get(); ++i)
-            assertEquals("Local entries: " + entrySet(grid(i).cache(null).localEntries(CachePeekMode.PRIMARY)) +
-                ". All entries:" +
-                entrySet(grid(i).cache(null).localEntries()), 0, grid(i).cache(null).localSize());
+        for (int i = 0; i < igniteId.get(); ++i) {
+            IgniteCache locCache = grid(i).cache(null);
 
-        U.sleep(5000);
-
-        for (int i = 0; i < igniteId.get(); ++i)
-            assertEquals("2 Local entries: " + entrySet(grid(i).cache(null).localEntries(CachePeekMode.PRIMARY)) +
-                ". All entries:" +
-                entrySet(grid(i).cache(null).localEntries()), 0, grid(i).cache(null).localSize());
-
-        assertEquals(0, cache.size());
+            assertEquals("Local size: " + locCache.localSize() + "\n" +
+                "On heap: " + locCache.localSize(CachePeekMode.ONHEAP) + "\n" +
+                "Off heap: " + locCache.localSize(CachePeekMode.OFFHEAP) + "\n" +
+                "Swap: " + locCache.localSize(CachePeekMode.SWAP) + "\n" +
+                "Primary: " + locCache.localSize(CachePeekMode.PRIMARY) + "\n" +
+                "Backup: " + locCache.localSize(CachePeekMode.BACKUP),
+                0, locCache.localSize());
+        }
     }
 }
