@@ -328,7 +328,8 @@ public abstract class GridDistributedCacheAdapter<K, V> extends GridCacheAdapter
                         try {
                             if (!locPart.isEmpty() && locPart.primary(topVer)) {
                                 for (GridDhtCacheEntry o : locPart.entries()) {
-                                    if (!ctx.affinity().belongs(ctx.localNode(), locPart.id(), dht.topology().topologyVersion()))
+                                    if (!ctx.affinity().belongs(ctx.localNode(), locPart.id(),
+                                        dht.topology().topologyVersion()))
                                         return false;
 
                                     if (!o.obsoleteOrDeleted())
@@ -341,7 +342,8 @@ public abstract class GridDistributedCacheAdapter<K, V> extends GridCacheAdapter
 
                             if (iter != null) {
                                 for (Map.Entry<byte[], GridCacheSwapEntry> e : iter) {
-                                    if (!ctx.affinity().belongs(ctx.localNode(), locPart.id(), dht.topology().topologyVersion()))
+                                    if (!ctx.affinity().belongs(ctx.localNode(), locPart.id(),
+                                        dht.topology().topologyVersion()))
                                         return false;
 
                                     dataLdr.removeDataInternal(ctx.toCacheKeyObject(e.getKey()));

@@ -30,9 +30,9 @@ import java.util.concurrent.atomic.*;
  * Test remove all method.
  */
 public class CacheRemoveAllSelfTest extends GridCacheAbstractSelfTest {
-    @Override
-    protected long getTestTimeout() {
-        return 600000;
+    /** {@inheritDoc} */
+    @Override protected long getTestTimeout() {
+        return 60000;
     }
 
     /** {@inheritDoc} */
