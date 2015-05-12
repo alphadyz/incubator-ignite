@@ -363,7 +363,7 @@ public abstract class GridDistributedCacheAdapter<K, V> extends GridCacheAdapter
                             }
 
                             GridCloseableIterator<Map.Entry<byte[], GridCacheSwapEntry>> iter =
-                                ctx.swap().iterator(part);
+                                dht.context().swap().iterator(part);
 
                             if (iter != null) {
                                 for (Map.Entry<byte[], GridCacheSwapEntry> e : iter)
