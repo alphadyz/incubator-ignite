@@ -4842,7 +4842,9 @@ public abstract class GridCacheAdapter<K, V> implements IgniteInternalCache<K, V
         }
 
         /** {@inheritDoc} */
-        @Nullable @Override public Object localExecute(@Nullable IgniteInternalCache cache) {
+        @Nullable @Override public Object localExecute() {
+            IgniteInternalCache cache = ((IgniteKernal)ignite).context().cache().cache(cacheName);
+
             if (cache != null)
                 cache.clearLocally();
 
@@ -4880,7 +4882,9 @@ public abstract class GridCacheAdapter<K, V> implements IgniteInternalCache<K, V
         }
 
         /** {@inheritDoc} */
-        @Nullable @Override public Object localExecute(@Nullable IgniteInternalCache cache) {
+        @Nullable @Override public Object localExecute() {
+            IgniteInternalCache cache = ((IgniteKernal)ignite).context().cache().cache(cacheName);
+
             if (cache != null)
                 cache.clearLocallyAll(keys);
 
@@ -4918,7 +4922,9 @@ public abstract class GridCacheAdapter<K, V> implements IgniteInternalCache<K, V
         }
 
         /** {@inheritDoc} */
-        @Nullable @Override public Object localExecute(@Nullable IgniteInternalCache cache) {
+        @Nullable @Override public Object localExecute() {
+            IgniteInternalCache cache = ((IgniteKernal)ignite).context().cache().cache(cacheName);
+
             if (cache == null)
                 return 0;
 
@@ -5541,16 +5547,13 @@ public abstract class GridCacheAdapter<K, V> implements IgniteInternalCache<K, V
         @Nullable @Override public final Object execute() {
             waitAffinityReadyFuture();
 
-            IgniteInternalCache cache = ((IgniteKernal)ignite).context().cache().cache(cacheName);
-
-            return localExecute(cache);
+            return localExecute();
         }
 
         /**
-         * @param cache Cache.
          * @return Local execution result.
          */
-        @Nullable protected abstract Object localExecute(@Nullable IgniteInternalCache cache);
+        @Nullable protected abstract Object localExecute();
 
         /**
          * Holds (suspends) job execution until our cache version becomes equal to remote cache's version.
