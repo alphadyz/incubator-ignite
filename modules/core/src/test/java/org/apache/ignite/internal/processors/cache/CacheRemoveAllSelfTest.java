@@ -53,12 +53,12 @@ public class CacheRemoveAllSelfTest extends GridCacheAbstractSelfTest {
 
         IgniteInternalFuture fut = GridTestUtils.runMultiThreadedAsync(new Callable<Object>() {
             @Override public Object call() throws Exception {
-                for (int i = 0; i < 3; ++i)
+                for (int i = 0; i < 2; ++i)
                     startGrid(igniteId.getAndIncrement());
 
                 return true;
             }
-        }, 2, "start-node-thread");
+        }, 3, "start-node-thread");
 
         cache.removeAll();
 
