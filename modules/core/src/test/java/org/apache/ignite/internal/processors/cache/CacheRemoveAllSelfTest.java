@@ -19,8 +19,8 @@ package org.apache.ignite.internal.processors.cache;
 
 import org.apache.ignite.*;
 import org.apache.ignite.cache.*;
-import org.apache.ignite.configuration.*;
 import org.apache.ignite.internal.*;
+import org.apache.ignite.internal.util.typedef.internal.*;
 import org.apache.ignite.testframework.*;
 
 import java.util.concurrent.*;
@@ -38,11 +38,6 @@ public class CacheRemoveAllSelfTest extends GridCacheAbstractSelfTest {
     /** {@inheritDoc} */
     @Override protected int gridCount() {
         return 4;
-    }
-
-    /** {@inheritDoc} */
-    @Override protected NearCacheConfiguration nearConfiguration() {
-        return null;
     }
 
     /**
@@ -68,6 +63,8 @@ public class CacheRemoveAllSelfTest extends GridCacheAbstractSelfTest {
         cache.removeAll();
 
         fut.get();
+
+        U.sleep(5000);
 
         for (int i = 0; i < igniteId.get(); ++i) {
             IgniteCache locCache = grid(i).cache(null);
