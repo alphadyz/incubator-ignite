@@ -993,7 +993,7 @@ public abstract class GridCacheContinuousQueryAbstractSelfTest extends GridCommo
     /**
      *
      */
-    public static class StoreFactory implements Factory<CacheStore> {
+    private static class StoreFactory implements Factory<CacheStore> {
         @Override public CacheStore create() {
             return new TestStore();
         }
@@ -1002,7 +1002,7 @@ public abstract class GridCacheContinuousQueryAbstractSelfTest extends GridCommo
     /**
      * Store.
      */
-    public static class TestStore extends CacheStoreAdapter<Object, Object> {
+    private static class TestStore extends CacheStoreAdapter<Object, Object> {
         /** {@inheritDoc} */
         @Override public void loadCache(IgniteBiInClosure<Object, Object> clo, Object... args) {
             for (int i = 0; i < 10; i++)
