@@ -147,7 +147,6 @@ public abstract class GridDistributedCacheAdapter<K, V> extends GridCacheAdapter
             do {
                 removed = true;
 
-                System.out.println("!!!!Redone remove all");
                 topVer = ctx.affinity().affinityTopologyVersion();
 
                 // Send job to all data nodes.
@@ -293,10 +292,8 @@ public abstract class GridDistributedCacheAdapter<K, V> extends GridCacheAdapter
             ctx.gate().enter();
 
             try {
-                if (!ctx.affinity().affinityTopologyVersion().equals(topVer)) {
-                    System.out.println("!!!! have different version");
+                if (!ctx.affinity().affinityTopologyVersion().equals(topVer))
                     return new Integer(-1); // Ignore this remove request because remove request will be sent again.
-                }
 
                 GridDhtCacheAdapter<K, V> dht;
                 GridNearCacheAdapter<K, V> near = null;
@@ -349,11 +346,8 @@ public abstract class GridDistributedCacheAdapter<K, V> extends GridCacheAdapter
                 ctx.gate().leave();
             }
 
-            if (!ctx.affinity().affinityTopologyVersion().equals(topVer)) {
-                System.out.println("!!!! have different version in the end.");
-
+            if (!ctx.affinity().affinityTopologyVersion().equals(topVer))
                 return new Integer(-1);
-            }
 
             return null;
         }
